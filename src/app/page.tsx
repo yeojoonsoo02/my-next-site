@@ -63,7 +63,7 @@ export default function Home() {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && addComment()}
-        placeholder="댓글을 입력하세요"
+        placeholder="댓글을 입력하세요."
         className="w-full p-2 border rounded mb-2"
       />
 
