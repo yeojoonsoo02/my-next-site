@@ -6,6 +6,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  deleteDoc,
+  doc as firestoreDoc,
   Timestamp,
   query,
   orderBy,
@@ -21,6 +23,7 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
 
+  // 댓글 불러오기
   const loadComments = async () => {
     const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -31,6 +34,7 @@ export default function Home() {
     setComments(docs);
   };
 
+  // 댓글 추가
   const addComment = async () => {
     if (!input.trim()) return;
     await addDoc(collection(db, 'comments'), {
@@ -38,6 +42,12 @@ export default function Home() {
       createdAt: Timestamp.now(),
     });
     setInput('');
+    loadComments();
+  };
+
+  // 댓글 삭제
+  const deleteComment = async (id: string) => {
+    await deleteDoc(firestoreDoc(db, 'comments', id));
     loadComments();
   };
 
@@ -59,11 +69,22 @@ export default function Home() {
 
       <ul>
         {comments.map((comment) => (
-          <li key={comment.id} className="border rounded p-2 mb-2">
-            <div>{comment.text}</div>
-            <div className="text-sm text-gray-500">
-              {comment.createdAt.toDate().toLocaleString()}
+          <li
+            key={comment.id}
+            className="border rounded p-2 mb-2 flex justify-between items-center"
+          >
+            <div>
+              <div>{comment.text}</div>
+              <div className="text-sm text-gray-500">
+                {comment.createdAt.toDate().toLocaleString()}
+              </div>
             </div>
+            <button
+              onClick={() => deleteComment(comment.id)}
+              className="text-red-500 text-sm ml-4"
+            >
+              ❌
+            </button>
           </li>
         ))}
       </ul>
